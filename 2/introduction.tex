@@ -136,4 +136,33 @@ wasa3
 % \fnbelowfloat command of the stfloats package.
 
 \subsection{State of the Art}
-estei of diar
+The Domain Name System (DNS) is a fundamental Internet service that traditionally operates over the User Datagram Protocol (UDP). Classic DNS over UDP offers no encryption or authentication, making queries and responses vulnerable to eavesdropping and forgery
+arxiv.org
+researchgate.net
+. In the past five years, extensive research and standardization efforts have focused on improving DNS security, privacy, and performance. Notably, several secure DNS protocols have been introduced: DNS Security Extensions (DNSSEC) for data authenticity, DNS over TLS (DoT), DNS over HTTPS (DoH), and DNS over QUIC (DoQ). These protocols encrypt DNS traffic (partially or fully) to protect users from on-path attackers
+arxiv.org
+. Each comes with trade-offs in latency and resource overhead
+arxiv.org
+, but they address the critical lack of confidentiality and integrity in traditional DNS. Recent studies show that the performance penalty of DNS encryption can be minimal. For example, DNS over QUIC – a UDP-based encrypted transport – was found to load simple webpages up to 10% faster than DoH and to be only ~2% slower than unencrypted UDP DNS, making privacy-preserving DNS highly viable in practice
+researchgate.net
+. On the other hand, researchers have noted that even with encryption between client and resolver, the resolver can still observe client identities and queries. To tackle this, oblivious DNS protocols (ODNS and Oblivious DoH/DoQ) have been proposed, which use an intermediate proxy or relay to hide the end-user’s IP address from the recursive resolver
+arxiv.org
+. This approach prevents the DNS server from linking queries to specific clients, further enhancing privacy at some additional complexity.
+
+Beyond encryption, contemporary DNS research also explores reliability and new applications of DNS. In Internet-of-Things (IoT) environments, DNS must operate on resource-constrained devices and often lossy networks. A recent study by Aydeger et al. (2025) evaluated DNSSEC, DoT, DoH, and DoQ on an edge IoT resolver, comparing their performance under various conditions (with and without caching)
+arxiv.org
+. The results highlight that secure DNS protocols incur overhead (in processing and energy use) on IoT devices
+arxiv.org
+, but they are necessary to protect IoT ecosystems from attacks like cache poisoning. Indeed, millions of IoT devices have been found vulnerable due to outdated DNS implementations (e.g. the Name:Wreck flaws)
+arxiv.org
+, underscoring the need for robust DNS security in this domain. Another line of work has looked at improving UDP itself to better support services like DNS. Researchers have proposed enhanced UDP mechanisms with acknowledgments to increase reliability for critical transactions. For instance, a 2024 experiment demonstrated that an augmented UDP protocol significantly reduces packet loss compared to standard UDP, thereby improving DNS delivery reliability in dynamic network topologies (at the cost of slightly higher power consumption on devices)
+mdpi.com
+. This indicates that even as DNS moves toward newer transports and security layers, optimizations at the UDP layer can benefit scenarios where UDP remains in use.
+
+Finally, the evolving DNS landscape has raised new security considerations. Encrypting DNS traffic (via DoT/DoH/DoQ) mitigates privacy risks for users, but it also complicates network defense, since traditional security tools can no longer inspect DNS queries easily. Recent research provides insight into this trade-off. Lyu et al. (2022) survey the DNS encryption literature and note that malware has begun exploiting encrypted DNS channels for command-and-control and data exfiltration, knowing that DNS queries are hidden from many monitoring tools
+researchgate.net
+. To counter this, researchers are developing inference techniques and out-of-band analyses to detect malicious patterns in encrypted DNS traffic
+researchgate.net
+. In summary, the state-of-the-art DNS research balances enhancements in security/privacy and performance: introducing encryption and new protocols to protect DNS queries, refining UDP and resolver strategies for reliability, and devising methods to manage the unintended side effects of a more secure DNS ecosystem.
+
+ejemplo de cita~\cite{rfc9114,rfc9000,rfc8446}.

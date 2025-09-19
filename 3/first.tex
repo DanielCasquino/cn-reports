@@ -8,15 +8,15 @@ of them were outgoing packets. Their protocols varied between DNS, MDNS, DHCP,
 and QUIC.\@
 
 \begin{figure}[htbp]
-    \centering
-    \includegraphics[width=1\linewidth]{img/1.png}
-    \caption{Received UDP packet count}\label{fig:1}
+	\centering
+	\includegraphics[width=1\linewidth]{img/1.png}
+	\caption{received udp packet count}\label{fig:1}
 \end{figure}
 
 \begin{figure}[htbp]
-    \centering
-    \includegraphics[width=1\linewidth]{img/2.png}
-    \caption{UDP packet protocols}\label{fig:2}
+	\centering
+	\includegraphics[width=1\linewidth]{img/2.png}
+	\caption{UDP packet protocols}\label{fig:2}
 \end{figure}
 
 There were also many packets that were not necessarily related to the URL we
@@ -24,28 +24,28 @@ visited, such as a DNS query to \textit{watson.events.data.microsoft.com}. This
 specific hostname is related to Windows telemetry.
 
 \begin{figure}[htbp]
-    \centering
-    \includegraphics[width=1\linewidth]{img/3.png}
-    \caption{Windows telemetry~\ensuremath{:(}}\label{fig:3}
+	\centering
+	\includegraphics[width=1\linewidth]{img/3.png}
+	\caption{Windows telemetry~\ensuremath{:(}}\label{fig:3}
 \end{figure}
 
 After that, we selected the first outgoing DNS packet going to
 \textit{www.utec.edu.pe} to analyze its contents, which are displayed below.
 
 \begin{figure}[htbp]
-    \centering
-    \includegraphics[width=1\linewidth]{img/4.png}
-    \caption{www.utec.edu.pe packet info}\label{fig:4}
+	\centering
+	\includegraphics[width=1\linewidth]{img/4.png}
+	\caption{www.utec.edu.pe packet info}\label{fig:4}
 \end{figure}
 
 The packet's main fields are:
 
 \begin{itemize}
-    \item Source/Destination Port: Port used for outgoing packet, destination port is the
-          default DNS port (53).
-    \item Length: Total length of the UDP packet (41 bytes).
-    \item Checksum: Value used to verify the integrity of the packet.
-    \item Checksum Status: Indicates whether the checksum is correct or not.
+	\item Source/Destination Port: Port used for outgoing packet, destination port is the
+	      default DNS port (53).
+	\item Length: Total length of the UDP packet (41 bytes).
+	\item Checksum: Value used to verify the integrity of the packet.
+	\item Checksum Status: Indicates whether the checksum is correct or not.
 \end{itemize}
 
 The checksum status shown in the packet is ``Unverified'', which means that the
@@ -57,9 +57,9 @@ After looking around in Wireshark settings, we found a way to enable checksum
 validation for UDP packets. Enabling it updated the packet info field:
 
 \begin{figure}[htbp]
-    \centering
-    \includegraphics[width=1\linewidth]{img/5.png}
-    \caption{Wireshark checksum validation}\label{fig:5}
+	\centering
+	\includegraphics[width=1\linewidth]{img/5.png}
+	\caption{Wireshark checksum validation}\label{fig:5}
 \end{figure}
 
 The checksum status is now ``Correct'', although it displays a message saying
@@ -81,10 +81,56 @@ Finally, when server A receives it, it sends a final handshake and information
 transfer can begin.
 
 \begin{figure}[htbp]
-    \centering
-    \includegraphics[width=1\linewidth]{img/6.png}
-    \caption{TCP info}\label{fig:6}
+	\centering
+	\includegraphics[width=1\linewidth]{img/6.png}
+	\caption{TCP info}\label{fig:6}
 \end{figure}
 
 \subsubsection{Using nslookup}
 
+Now again we set Wireshark's filter to display UDP only, but now visiting
+\textit{www.cisco.com}, the total UDP packet count was approximately 4. All of them have de DNS protocol.\@
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\linewidth]{img/7.png}
+	\caption{received udp packet count}\label{fig:7}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\linewidth]{img/8.png}
+	\caption{first query package ports}\label{fig:8}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\linewidth]{img/9.png}
+	\caption{second query package ports}\label{fig:9}
+\end{figure}
+
+The reason why nslookup generates UDP traffic is because it searches for dns servers, dns is the network service who relies on this context. The source and destnation ports of the packages are 55299, 51050 and 53. This shows that DNS default port is 53. The length of the DNS request is about 50 bytes, while the length of the response is higher than 100 bytes, being of course biggger than the request because it contains something, it's transporting.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\linewidth]{img/10.png}
+	\caption{first query package ports}\label{fig:10}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\linewidth]{img/11.png}
+	\caption{second query package ports}\label{fig:11}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\linewidth]{img/12.png}
+	\caption{second query package ports}\label{fig:12}
+\end{figure}
+
+
+The query was resolved successfully because the responses have the answers xd. Probably DNS uses UDP because its faster and thats needed in the context of web traffic, like web pages for example.
+
+
+\cite{rfc1034}
