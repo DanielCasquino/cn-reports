@@ -2,8 +2,8 @@
 
 \subsubsection{Python UDP Implementation (Loopback)}
 
-After setting up a Python environment and running both scripts, we got the
-following output:
+After setting up a Python environment and running the provided scripts, we got
+the following output:
 
 \begin{figure}[htbp]
 	\centering
@@ -32,7 +32,7 @@ package.
 The source port is 61373, which can be interpreted as a private port.
 Destination port is 5005.
 
-To send the UDP packet to a different PC, we would need to
+If we were to try and send the UDP packet to a different PC, we would need to:
 
 \begin{itemize}
 	\item be on the same network
@@ -49,14 +49,30 @@ such task.
 	\caption{}\label{fig:2_4}
 \end{figure}
 
-The checksum is different by one bit. The checksum was calculated and validated
-correctly, as displayed by Wireshark.
+The checksums differ by one byte. The first one is \texttt{Ox95ff}, while the
+second packet shows a checksum with the value \texttt{0x95fe}. The checksums
+were calculated and validated correctly, as displayed by Wireshark.
 
 The 128 TTL value is set by Windows for outgoing IP packets, and as it never
 leaves the PC, its TTL never changes (no hostname resolution).
 
-The Wireshark packet is identified as UDP, as it assumes it is UDP by the port
-number. According to a short research, it might also use heuristics if port
-doesn't match a known protocol.
+The Wireshark packet was identified as UDP due to the port number. This is also
+feasible for identifying application-layer protocol packets. Protocols like DNS
+and DHCP use well-known ports (53 and 67/68). This method, however, does not
+always work. After a bit of googling, we found out that Wireshark might resort
+to heuristics when dealing with unrecognized packets.
+
+Finally, we wanted to see what would happen if our sender script used a
+non-routable or invalid IP address. We modified the \texttt{sender.py} script
+to use the address \texttt{192.0.2.1} instead of \texttt{127.0.0.1}. The
+receiver script was also modified. Wireshark detected no loopback packets, and
+the receiver output was the following:
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\linewidth]{img/second_exp/5.png}
+	\caption{Receiver Output with invalid IP}\label{fig:2_5}
+\end{figure}
 
 \subsubsection{Python UDP Implementation (P2P)}
+% TODO: info paca

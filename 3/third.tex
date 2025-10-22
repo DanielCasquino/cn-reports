@@ -1,5 +1,9 @@
 \subsection{Third Experience}
 
+In this experience, we captured and analyzed the TCP packets sent to a
+\texttt{gaia.cs} server after uploading a text file containing an ASCII copy of
+Alice in Wonderland.
+
 \subsubsection{Bulk TCP Transfer}
 
 The three-way handshake is a way of establishing a connection between two PCs.
@@ -11,7 +15,8 @@ It makes sure that:
     \item The sender is able to listen to the receiver's response
 \end{itemize}
 
-After sending the text file, we analyzed the first three handshake packets.
+After sending the text file to the server, we analyzed the first three
+handshake packets.
 
 \begin{figure}[htbp]
     \centering
@@ -19,7 +24,7 @@ After sending the text file, we analyzed the first three handshake packets.
     \caption{}\label{fig:3_1}
 \end{figure}
 
-After analyzing the contained headers, we can see that:
+By observing the contained headers, we can see that:
 
 \begin{itemize}
     \item The first packet is a SYN (synchronize) packet sent from the sender to the
@@ -32,9 +37,9 @@ After analyzing the contained headers, we can see that:
           is now 1 (data transfer enabled).
 \end{itemize}
 
-After this short analysis, we can see that the ACK value is set to 1 after the
-receiver \textbf{ACKnowledges} the sender's request. It's a way confirming the
-connection request.
+Thanks to this short analysis, we can see that the ACK value is set to 1 after
+the receiver \textbf{ACKnowledges} the sender's request. It's a way of
+confirming the connection request.
 
 The ports used for communication were:
 
@@ -57,3 +62,4 @@ the packet being sent. It's sent according to the previous' packet sequence
 number length.
 
 \subsubsection{Captured Trace}
+% info paca

@@ -26,7 +26,7 @@ specific hostname is related to Windows telemetry.
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[width=1\linewidth]{img/3.png}
-	\caption{Windows telemetry~\ensuremath{:(}}\label{fig:3}
+	\caption{Windows telemetry \(:(\)}\label{fig:3}
 \end{figure}
 
 After that, we selected the first outgoing DNS packet going to
@@ -63,15 +63,15 @@ validation for UDP packets. Enabling it updated the packet info field:
 \end{figure}
 
 The checksum status is now ``Correct'', although it displays a message saying
-that it matches the partial checksum, and that it's probably due to ``UDP
-checksum offload''. A little research on this shows that it's a feature
-integrated into modern NICs (Network Interface Cards) that allows them verify
-the checksum, instead of having the CPU do it. This improves performance, but
-it can cause small mismatches, like we saw in Wireshark.
+that it matches the partial checksum, probably due to ``UDP checksum offload''.
+A little research on this topic showed that it's a feature integrated into
+modern NICs (Network Interface Cards) that allows them verify the checksum,
+instead of having the CPU do it. This improves performance, but it can cause
+small mismatches, like we saw in Wireshark.
 
 Comparing the UDP packet info with a TCP packet, we can immediately see some
 differences. There are stream indexes, TCP segments information, and most
-importantly, \textbf{acknoledgment} related fields. This shows one of TCP's
+importantly, \textbf{acknowledgment} related fields. This shows one of TCP's
 particular features, handshakes.
 
 Handshakes are a way for TCP to ensure that both servers are able to
@@ -86,10 +86,12 @@ transfer can begin.
 	\caption{TCP info}\label{fig:6}
 \end{figure}
 
+% TODO: paca
 \subsubsection{Using nslookup}
 
 Now again we set Wireshark's filter to display UDP only, but now visiting
-\textit{www.cisco.com}, the total UDP packet count was approximately 4. All of them have de DNS protocol.\@
+\textit{www.cisco.com}, the total UDP packet count was approximately 4. All of
+them have de DNS protocol.\@
 
 \begin{figure}[htbp]
 	\centering
@@ -109,7 +111,12 @@ Now again we set Wireshark's filter to display UDP only, but now visiting
 	\caption{second query package ports}\label{fig:9}
 \end{figure}
 
-The reason why nslookup generates UDP traffic is because it searches for dns servers, dns is the network service who relies on this context. The source and destnation ports of the packages are 55299, 51050 and 53. This shows that DNS default port is 53. The length of the DNS request is about 50 bytes, while the length of the response is higher than 100 bytes, being of course biggger than the request because it contains something, it's transporting.
+The reason why nslookup generates UDP traffic is because it searches for dns
+servers, dns is the network service who relies on this context. The source and
+destnation ports of the packages are 55299, 51050 and 53. This shows that DNS
+default port is 53. The length of the DNS request is about 50 bytes, while the
+length of the response is higher than 100 bytes, being of course biggger than
+the request because it contains something, it's transporting.
 
 \begin{figure}[htbp]
 	\centering
@@ -129,8 +136,6 @@ The reason why nslookup generates UDP traffic is because it searches for dns ser
 	\caption{second query package ports}\label{fig:12}
 \end{figure}
 
-
-The query was resolved successfully because the responses have the answers xd. Probably DNS uses UDP because its faster and thats needed in the context of web traffic, like web pages for example.
-
-
-\cite{rfc1034}
+The query was resolved successfully because the responses have the answers xd.
+Probably DNS uses UDP because its faster and thats needed in the context of web
+traffic, like web pages for example. \cite{rfc1034}
