@@ -78,5 +78,45 @@ A short research indicates that \texttt{192.0.2.1} is not a valid IP address,
 and is reserved for use in documentation and code examples~\cite{rfc5735}.
 
 \subsubsection{Python UDP Implementation (P2P)}
-% TODO: info paca
 
+To send messages betweent two computers, we first had to know the IP of the
+receiving computer. For this, we used the \texttt{ipconfig} command (Windows
+receiver). The sender script ran on a NixOS machine.
+
+The following screenshot shows both the source and destination addresses, and
+also serves as evidence of successful message transfer.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\linewidth]{img/second_exp/6.png}
+	\caption{Wireshark packets}\label{fig:2_6}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\linewidth]{img/second_exp/7.png}
+	\caption{Python receiver output}\label{fig:2_7}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\linewidth]{img/second_exp/8.png}
+	\caption{UDP packet structure}\label{fig:2_8}
+\end{figure}
+
+The message is immediately printed on the receiver side, and its format
+consists of a payload and a header with the following fields:
+
+\begin{itemize}
+	\item Source port
+	\item Destination port
+	\item Packet length: header length + payload length
+	\item Checksum and checksum status
+	\item Stream index: works as an identifier for UDP packets
+	\item Stream packet number: packet index in the current stream
+\end{itemize}
+
+UDP might be the better option over TCP when speed is the main concern. For
+instance, DNS uses UDP, as it needs fast domain name resolution be able to load
+the required resources. TCP would introduce a delay when waiting for the server
+acknowledgements.
