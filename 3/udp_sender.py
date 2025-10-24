@@ -9,7 +9,7 @@ def checksum_calculator(data):
     return checksum
 
 
-UDP_IP = "10.172.39.228"
+UDP_IP = "192.0.2.1"
 UDP_PORT = 5005
 MESSAGE = b"Hello, World!"
 
