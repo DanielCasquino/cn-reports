@@ -91,7 +91,7 @@ transfer can begin.
 
 Now again we set Wireshark's filter to display UDP only, but now visiting
 \textit{www.cisco.com}, the total UDP packet count was approximately 4. All of
-them have de DNS protocol.\@
+them have de DNS protocol. There where both sended and received.\@
 
 \begin{figure}[htbp]
 	\centering
@@ -136,6 +136,6 @@ the request because it contains something, it's transporting.
 	\caption{second query package ports}\label{fig:12}
 \end{figure}
 
-The query was resolved successfully because the responses have the answers xd.
+The query was resolved successfully because the responses have the answers.
 Probably DNS uses UDP because its faster and thats needed in the context of web
-traffic, like web pages for example. \cite{rfc1034}
+traffic, like web pages for example. We can see on the previous figures that UDP packages, have a source port, a destination port, a length of the payload (data that is being transferred) and a checksum  that we forgot to record, but it doesn't matter because it's unused in this protcol. \cite{rfc1034}
