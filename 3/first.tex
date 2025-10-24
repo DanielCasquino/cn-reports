@@ -141,4 +141,4 @@ Probably DNS uses UDP because its faster and thats needed in the context of web
 traffic, like web pages for example. We can see on the previous figures that
 UDP packages, have a source port, a destination port, a length of the payload
 (data that is being transferred) and a checksum that we forgot to record, but
-it doesn't matter because it's unused in this protcol.
+it doesn't matter because it's unused in this protcol. The maximum payload length possible is \(2^{16}\)-1-8 bytes, because the total length field of UDP has only 16 bits, and the header size is 8 bytes. In a similar manner the maximum UPD source port is \(2^{16}\)-1 because is a 16 bit field too. Finally, UDP protocol number is 17 by the way.
