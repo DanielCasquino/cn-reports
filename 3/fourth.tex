@@ -47,12 +47,7 @@ first six segments's data would be:
 
 \subsubsection{TCP Congestion Control}
 
-The sequence number used to initiate the connection in the SYN segment is 0.
-
-I have to clue where the SYN segment is.
-
-The SYN ACK segment sent by gaia.cs.umass.edu has a sequence number of 0 as
-well.
+As it's seen in the figure below, the TCP protocol is in its slow start phase, because the amount of packages increases each time, exponentially, allowing more packages to be transferred in a single fleet. The period between fleets seems to be almost constant, about the same time of a RTT.
 
 \begin{figure}[htbp]
 	\centering
