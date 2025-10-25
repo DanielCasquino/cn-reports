@@ -13,15 +13,18 @@
 % 
 % Here we have the typical use of a "T" for an initial drop letter
 % and "HIS" in caps to complete the first word.
-\IEEEPARstart{I}{P} addresses allow us to identify devices on a network,
-and allow us to communicate with the precise device we want to reach.
-However, there's only so many IP addresses that can be assigned and/or remembered, and as such,
-a scalable solution is needed.
+\IEEEPARstart{T}{ransport} Layer protocols are a fundamental part of the network communication
+stack. They are in charge of providing end-to-end communication between computers, providing either
+speed, reliability, or a mix of both when needed.
 
-In these lab sessions, we experimented with the Domain Name System (DNS), which
-functions as a system that maps strings of numbers to human-readable hostnames.
-The goal of this report is to document and summarize our findings and
-conclusions.
+In these lab sessions, we experimented with Wireshark and transport layer
+protocols. We first analyzed the structure and behaviour of UDP, then moved on
+to TCP, and finally implemented the theoretical protocol RDT using Python. This
+report aims to summarize our lab experiences and findings. \\
+
+For the RDT2 Python implementation (sender and receiver), see our repository at
+\url{https://github.com/DanielCasquino/cn-reports/tree/main/3/rdt_implementation}.
+
 % You must have at least 2 lines in the paragraph with the drop letter
 % (should never be an issue)
 
@@ -32,19 +35,61 @@ conclusions.
 \section{Theoretical Framework}
 
 \subsection{User Datagram Protocol (UDP)}
-UDP provides a connectionless, best-effort datagram service over IP: no delivery, ordering, or duplication guarantees, and no built-in congestion control. Its minimal header and lack of handshakes yield low latency and overhead, which suits interactive or real-time apps (VoIP, streaming, games) and DNS queries where timeliness outweighs perfect reliability \cite{rfc768,kurose:topdown8e}. Any reliability, pacing, or congestion response must be implemented by the application layer.
+UDP provides a connectionless, best-effort datagram service over IP: no
+delivery, ordering, or duplication guarantees, and no built-in congestion
+control. Its minimal header and lack of handshakes yield low latency and
+overhead, which suits interactive or real-time apps (VoIP, streaming, games)
+and DNS queries where timeliness outweighs perfect reliability
+\cite{rfc768,kurose:topdown8e}. Any reliability, pacing, or congestion response
+must be implemented by the application layer.
+
+\subsection{ARQ (Automatic Repeat Request)}
+ARQ refers to an error handling strategy in the transport layer. It uses
+ACK/NAK to detect if the receiver got data correctly. If the sender does not
+receive confirmation (via ACK) within a certain timeout, the data is
+retransmitted.
+
+\subsection{FEC (Forward Error Correction)}
+FEC is a way of adding redundancy to sent data so that the receiver can recover
+lost or corrupted information without resorting to retransmissions. This is
+useful in high-latency or lossy networks, where retransmitting a packet would
+be too expensive (e.g, Hamming codes).
+
+\subsection{BDP (Bandwidth-Delay Product)}
+BDP is a metric that defines the amount of data that is ``in transit'' at any
+given time, i.e. unacknowledged packets. This is specially important when
+working with TCP, as it defines how much data can be sent before an ACK.
 
 \subsection{Reliable Data Transfer (RDT)}
-RDT is a design pattern for building reliability atop an unreliable channel using sequence numbers, ACK/NAK, timeouts and retransmissions (ARQ). Stop-and-Wait is simplest; pipelined variants (Go-Back-N, Selective Repeat) improve utilization. In high BDP paths, hybrid ARQ+FEC can preserve throughput while lowering delay and receiver buffering compared to pure ARQ at large windows \cite{kurose:topdown8e,ghaderi2013scalablerdt}.
+RDT is a design pattern for building reliability on top of an unreliable
+channel using sequence numbers, ACK/NAK, timeouts and retransmissions (ARQ).
+Stop-and-Wait is simplest; pipelined variants (Go-Back-N, Selective Repeat)
+improve utilization. In high BDP paths, a combination of ARQ and FEC can
+preserve throughput while lowering delay and receiver buffering compared to
+pure ARQ at large windows~\cite{kurose:topdown8e,ghaderi2013scalablerdt}.
 
 \subsection{Transmission Control Protocol (TCP)}
-TCP offers a reliable, in-order byte stream with flow control (rwnd) and congestion control. It tracks bytes with sequence/ACK numbers, retransmits losses, and uses handshakes and options (e.g., MSS, SACK) \cite{rfc793,kurose:topdown8e}. Classic loss-based control (Reno/CUBIC) can induce bufferbloat or underuse lossy links; newer approaches (e.g., BBR) model bottleneck bandwidth and RTT to operate with high throughput and low queueing delay \cite{cardwell2017bbr}.
+TCP offers a reliable, in-order byte stream with flow control (rwnd) and
+congestion control. It tracks bytes with sequence/ACK numbers, retransmits
+losses, and uses handshakes and options (e.g., MSS, SACK)
+\cite{rfc793,kurose:topdown8e}. Classic loss-based control (Reno/CUBIC) can
+induce bufferbloat or underuse lossy links; newer approaches (e.g., BBR) model
+bottleneck bandwidth and RTT to operate with high throughput and low queueing
+delay \cite{cardwell2017bbr}.
 
 \subsection{Port Scanning}
-Port scanning probes TCP/UDP ports to infer open/closed/filtered services by analyzing protocol-specific responses (e.g., SYN$\rightarrow$SYN-ACK vs. RST, ICMP Port Unreachable for UDP). It is essential for asset discovery and security auditing, yet aggressive scans are detectable; defenders counter with filtering, rate-limits and tarpits \cite{lyon:nmap}.
+Port scanning probes TCP/UDP ports to infer open/closed/filtered services by
+analyzing protocol-specific responses (e.g., SYN$\rightarrow$SYN-ACK vs. RST,
+ICMP Port Unreachable for UDP). It is essential for asset discovery and
+security auditing, yet aggressive scans are detectable; defenders counter with
+filtering, rate-limits and tarpits \cite{lyon:nmap}.
 
 \subsection{Distributed Denial-of-Service (DDoS)}
-DDoS floods exhaust bandwidth, state or CPU by coordinating many sources. Variants include SYN floods, UDP floods, application-layer floods, and reflection/amplification via open UDP services. Mitigation blends network filtering, rate-limiting, anycast/CDN scrubbing, and disabling misconfigured amplifiers \cite{mirkovic2004taxonomy}.
+DDoS floods exhaust bandwidth, state or CPU by coordinating many sources.
+Variants include SYN floods, UDP floods, application-layer floods, and
+reflection/amplification via open UDP services. Mitigation blends network
+filtering, rate-limiting, anycast/CDN scrubbing, and disabling misconfigured
+amplifiers \cite{mirkovic2004taxonomy}.
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
@@ -140,16 +185,31 @@ DDoS floods exhaust bandwidth, state or CPU by coordinating many sources. Varian
 \section{State of the Art}
 
 \subsection{RDT Beyond ARQ}
-For high-speed or lossy environments, coding augments ARQ to cut delay and receiver buffering while sustaining full throughput; analytical results show FEC+ARQ can be asymptotically more delay- and buffer-efficient than selective repeat under large windows \cite{ghaderi2013scalablerdt}.
+For high-speed or lossy environments, coding augments ARQ to cut delay and
+receiver buffering while sustaining full throughput; analytical results show
+FEC+ARQ can be asymptotically more delay- and buffer-efficient than selective
+repeat under large windows \cite{ghaderi2013scalablerdt}.
 
 \subsection{UDP in Modern Stacks}
-UDP underpins classic real-time media and DNS, and now serves as substrate for QUIC/HTTP-3. QUIC brings reliable, encrypted, multiplexed streams in user space, avoiding TCP’s head-of-line blocking and reducing handshake costs; it is standardized by the IETF \cite{rfc9000}.
+UDP underpins classic real-time media and DNS, and now serves as substrate for
+QUIC/HTTP-3. QUIC brings reliable, encrypted, multiplexed streams in user
+space, avoiding TCP’s head-of-line blocking and reducing handshake costs; it is
+standardized by the IETF \cite{rfc9000}.
 
 \subsection{TCP Evolution}
-Beyond SACK/PRR/CUBIC, \textit{BBR} shifts from loss-driven to model-based control, probing for bottleneck bandwidth and min-RTT to keep queues shallow and goodput high; deployments report lower latency and higher throughput across diverse paths \cite{cardwell2017bbr}.
-
-
+Beyond SACK/PRR/CUBIC, \textit{BBR} shifts from loss-driven to model-based
+control, probing for bottleneck bandwidth and min-RTT to keep queues shallow
+and goodput high; deployments report lower latency and higher throughput across
+diverse paths \cite{cardwell2017bbr}.
 
 \section{Methodology}
-We used a capture–execute–analyze loop: (1) configure the scenario (client–server scripts or tool-driven probes), (2) generate traffic, capturing with Wireshark, and (3) analyze traces with display filters and flow/sequence graphs. Python sockets produced UDP/TCP traffic (and controlled loss/bursts); standard tools (\texttt{nslookup}, \texttt{ping}, \texttt{nmap}) exercised name resolution and scanning. For transport behavior we inspected 3-way handshakes, seq/ack dynamics, SACK/dupACKs, windows, RTTs and retransmissions; for UDP we verified ports, checksums, and server/client behavior. We documented steps and sketched simple block/flow diagrams to keep experiments repeatable.
+We used a capture–execute–analyze loop: (1) configure the scenario
+(client–server scripts or tool-driven probes), (2) generate traffic, capturing
+with Wireshark, and (3) analyze traces with display filters and flow/sequence
+graphs. Python sockets produced UDP/TCP traffic (and controlled loss/bursts);
+standard tools (\texttt{nslookup}, \texttt{ping}, \texttt{nmap}) exercised name
+resolution and scanning. For transport behavior we inspected 3-way handshakes,
+seq/ack dynamics, SACK/dupACKs, windows, RTTs and retransmissions; for UDP we
+verified ports, checksums, and server/client behavior. We documented steps and
+sketched simple block/flow diagrams to keep experiments repeatable.
 
