@@ -1,7 +1,29 @@
 
 \section*{Conclusions and Recommendations}
 
-poner una conc y una reco para cada experiencia
+\subsection*{First Experience}
+\textbf{Conclusion:} Propagation vs. transmission dominated latency changes the optimization levers; persistent/parallel HTTP drastically reduces page load overhead.\\
+\textbf{Recommendation:} Prefer persistent connections / HTTP-2/3 multiplexing; use CDNs and caching for long paths, and bandwidth/compression where transmission dominates.
+
+\subsection*{Second Experience}
+\textbf{Conclusion:} P2P scales distribution by aggregating peer upload; DNS mostly uses UDP, falling back to TCP when responses exceed limits.\\
+\textbf{Recommendation:} Use P2P or CDN+P2P for large fan-out; ensure TCP/53 is permitted for DNS fallback and monitor resolver latency/failures.
+
+\subsection*{Third Experience}
+\textbf{Conclusion:} UDP checksum and DHCP traces reinforced connectionless semantics; RDT needs timeouts for loss; TCP captures showed dupACK/fast-retransmit and flow control in action.\\
+\textbf{Recommendation:} Add app-level reliability for UDP where needed and test with loss; enable SACK/window scaling/modern CC for TCP.
+
+\subsection*{Fourth Experience}
+\textbf{Conclusion:} SYN and UDP scans reveal service exposure; aggressive scans are easy to detect in traces/IDS.\\
+\textbf{Recommendation:} Regular, authorized self-scans with least exposure; deploy filtering/rate-limits/tarpits and log connection attempts.
+
+\subsection*{Fifth Experience (incomplete)}
+\textbf{Conclusion:} Not executed; would likely cover TLS/NAT/DDoS mechanics and their transport interplay.\\
+\textbf{Recommendation:} Include a hands-on security/NAT lab; as interim, inspect TLS handshakes (\texttt{openssl s\_client}) or NAT traversal basics.
+
+\subsection*{Sixth Experience}
+\textbf{Conclusion:} UDP flooding degraded reachability and latency; simple edge rate-limits measurably restored partial availability.\\
+\textbf{Recommendation:} Layered DDoS defenses (ACLs/rate-limits/anycast or CDN scrubbing), disable amplifiers, add monitoring and an IR playbook.
 % if have a single appendix:
 %\appendix[Proof of the Zonklar Equations]
 % or
