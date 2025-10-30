@@ -30,14 +30,14 @@ first six segments's data would be:
 
 \begin{table}[htbp]
 	\centering
-	\begin{tabular}{|c|c|c|c|c|}
+	\begin{tabular}{|p{0.3cm}|c|c|c|c|}
 		\hline
-		Segment & Sent            & ACK             & RTT        & Est. RTT     \\
+		S & Sent            & ACK             & RTT        & Est. RTT     \\
 		\hline
-		1       & 20:34:29.490478 & 20:34:29.641190 & 0:0:150712 & 0:0:150712   \\
-		2       & 20:32:29.490574 & 20:34:29.641190 & 0:0:150616 & 0:0:1507005  \\
-		3       & 20:34:29.641199 & 20:34:29.688695 & 0:0:47496  & 0:0:13779994 \\
-		4       & 20:34:29.786521 & 20:34:30.001886 & 0:0:215365 & 0:0:14749558 \\
+		1 & 20:34:29.490478 & 20:34:29.641190 & 0:0:150712 & 0:0:150712   \\
+		2 & 20:32:29.490574 & 20:34:29.641190 & 0:0:150616 & 0:0:1507005  \\
+		3 & 20:34:29.641199 & 20:34:29.688695 & 0:0:47496  & 0:0:13779994 \\
+		4 & 20:34:29.786521 & 20:34:30.001886 & 0:0:215365 & 0:0:14749558 \\
 		\hline
 	\end{tabular}
 	\caption{First six TCP segments and their sequence numbers}
@@ -47,7 +47,10 @@ first six segments's data would be:
 
 \subsubsection{TCP Congestion Control}
 
-As it's seen in the figure below, the TCP protocol is in its slow start phase, because the amount of packages increases each time, exponentially, allowing more packages to be transferred in a single fleet. The period between fleets seems to be almost constant, about the same time of a RTT.
+As it's seen in the figure below, the TCP protocol is in its slow start phase,
+because the amount of packages increases each time, exponentially, allowing
+more packages to be transferred in a single fleet. The period between fleets
+seems to be almost constant, about the same time of a RTT.
 
 \begin{figure}[htbp]
 	\centering
