@@ -40,5 +40,25 @@ Taking a closer look at \ref{fig:no_port}, we can see that the ICMP type is 8
 the following fields:
 
 \begin{itemize}
-    \item \textbf{Checksum}:
+    \item \textbf{Checksum}: \texttt{0x4d4f}
+    \item \textbf{Checksum status}
+    \item \textbf{Identifier (BE)}: \texttt{0x0001}
+    \item \textbf{Identifier (LE)}: \texttt{0x1000}
+    \item \textbf{Sequence number (BE)}: \texttt{0x000c}
+    \item \textbf{Sequence number (LE)}: \texttt{0x0c00}
 \end{itemize}
+
+All fields are 2 bytes, except for the checksum status, which is just a bool.
+
+After analyzing the query packet, we took a look at the response packet, which
+is shown below.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{img/4/response_packet.png}
+    \caption{Ping reply from \texttt{www.ust.hk}}\label{fig:response_packet}
+\end{figure}
+
+In this case, the ICMP type is 0 (ping reply), and the code number is still 0.
+The rest of the packet is identical to the request packet, except for the
+checksum and the additional response time field.
