@@ -1,0 +1,44 @@
+\section{Fourth Experience}
+
+\subsection{ICMP and Ping}
+To begin, we sent 10 ping packets to \texttt{www.ust.hk}. The output is shown
+in the following picture.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{img/4/ping_cmd.png}
+    \caption{\texttt{www.ust.hk} ping}\label{fig:ping_cmd}
+\end{figure}
+
+Network traffic during the ping was captured with Wireshark, and we can see
+that our IP is \texttt{10.100.237.128}, and the IP for the specified hostname
+is \texttt{143.89.209.9}.
+
+At first glance it seems that ICMP does not use port numbers, as seen by the
+lack of a port field in the packet headers. After a brief googling session, we
+concluded that ICMP does not, in fact, use ports. This protocol operates of the
+network layer, and it is not in charge of sending information between
+applications on different hosts.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{img/4/no_port.png}
+    \caption{ICMP has no port :(}\label{fig:no_port}
+\end{figure}
+
+We can also take a look at the IP datagram to see the protocol number for ICMP,
+which is one, as shown in the following figure.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{img/4/protocol_number.png}
+    \caption{ICMP protocol number in IP datagram}\label{fig:protocol_number}
+\end{figure}
+
+Taking a closer look at \ref{fig:no_port}, we can see that the ICMP type is 8
+(for echo requests, i.e. pings), and the code number is 0. The packet also has
+the following fields:
+
+\begin{itemize}
+    \item \textbf{Checksum}:
+\end{itemize}

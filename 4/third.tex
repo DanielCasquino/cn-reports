@@ -1,7 +1,58 @@
 \subsection{Third Experience}
 
-\subsubsection{NAT with Wireshark}
-wasa
+\subsubsection{NAT Lab with Wireshark}
+
+After visiting \url{https://whatsmyipaddress.com}, we obtained the following
+addresses.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\linewidth]{img/3/ip_utec.png}
+	\caption{Public IP on uni network}\label{fig:ip_uni}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\linewidth]{img/3/ip_hotspot.png}
+	\caption{Public IP on hotspot}\label{fig:ip_hotspot}
+\end{figure}
+
+Both laptops show the same public address despite being on the same network.
+This is possible thanks to NAT. That is, all devices under the UTEC network
+share the same \textbf{public} IP address, and communication is instead
+identified via port usage (thanks to the router). Devices do have different
+\textbf{private} address.
+
+If an outside device attempted to stablish communication with a private IP, it
+would fail, as it would try to find a device inside its own private network.
+
+Given that all devices share the same public IP, the router uses ports to
+differentiate between them. For instance, two devices might use port 5000 and
+5001, even when sharing the same public IP. The user header is not ``port'',
+but rather ``Identification''.
+
+The port numbers used for the \texttt{8.8.8.8} ping were \texttt{5235}.
+
+We can determine the protocol used (IPv4 or IPv6) by checking either the IP
+format, or the packet type (ICMP or ICMPv6).
+
+The captured packets involve the use of the ICMP protocol, as it is being used
+to send pings to other devices.
+
+NAT is part of the network layer, as it deals with defining where data is sent.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\linewidth]{img/3/http_comp.png}
+	\caption{HTTP}\label{fig:http_comp}
+\end{figure}
+
+We can see that http uses a port, but NAT uses another one to map the private
+ip to something that is publicly addressable. It maps an (address, port)
+private tuple to a public tuple.
+
+% My private ip is 10.100.255.35
+
 
 \subsubsection{Real NAT Application Analysis}
 
