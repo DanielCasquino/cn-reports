@@ -1,0 +1,64 @@
+\subsection{Fifth Experience}
+
+\subsubsection{ICMP Error Messages via Simulated Network Failure}
+
+First, we looked up our IPv4 address with the \texttt{ipconfig} command.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{img/5/my_ip.png}
+    \caption{IPv4 address}\label{fig:my_ip}
+\end{figure}
+
+Given that the default gateway is \texttt{255.255.255.0}, we chose the address
+\texttt{10.100.240.255} as the invalid address to ping. We started packet
+capture in Wireshark, and pinged that address.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{img/5/invalid_ping.png}
+    \caption{Invalid ping}\label{fig:invalid_ping}
+\end{figure}
+
+There is no ICMP packets, as the computer first broadcasted a message using ARP
+(Adress Resolution Protocol). It attempted to get the MAC address of the
+computer with the IPv4 address, and it expected a machine to reply. However,
+there was no response as the IPv4 address is invalid.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{img/5/who_has.png}
+    \caption{Who has this address?}\label{fig:who_has}
+\end{figure}
+
+After that, we tried pinging the hostname \texttt{google.com} with a TTL of 1,
+as shown below.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{img/5/ping_i_1.png}
+    \caption{\texttt{Ping with TTL = 1}}\label{fig:ping_i_1}
+\end{figure}
+
+The captured traffic shows ICMP packets with the message ``Time to live
+exceeded in transit''. The ICMP type for these packets is 11 (Time Exceeded),
+and the code is 0.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{img/5/ttl_exceeded.png}
+    \caption{\texttt{Time Exceeded ICMP packet}}\label{fig:ttl_exceeded}
+\end{figure}
+
+The payload has the original IP header, and the original ICMP ping packet
+(type, code, checksum, and identifiers).
+
+\begin{itemize}
+    \item \textbf{Question:} How does TTL help prevent infinite loops in networks?
+\end{itemize}
+
+TTL specifies the maximum number of hops that a packet can do before being
+discarded by a router. Because the TTL value decreases by 1 on each hop, we
+will never have a packet hopping forever. A packet can hop for a while if the
+TTL value is high, but it will eventually be discarded or reach its
+destination.
