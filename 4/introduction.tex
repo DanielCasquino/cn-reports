@@ -13,15 +13,22 @@
 % 
 % Here we have the typical use of a "T" for an initial drop letter
 % and "HIS" in caps to complete the first word.
-\IEEEPARstart{I}{P} addresses allow us to identify devices on a network,
-and allow us to communicate with the precise device we want to reach.
-However, there's only so many IP addresses that can be assigned and/or remembered, and as such,
-a scalable solution is needed.
+\IEEEPARstart{T}{he} network layer is responsible for stitching together
+heterogeneous links, naming hosts with logical addresses, and ensuring that
+datagrams advance hop by hop until they reach the correct transport endpoint.
+Unlike the link layer, where framing details change every few meters of cable,
+network-layer protocols must remain portable and scalable despite mobility,
+address exhaustion, and middleboxes~\cite{tanenbaum:networks}. Every field in
+an IPv4 or IPv6 header is therefore a lever that either preserves reachability
+(time-to-live, checksums, flow labels), or equips upper layers with the context
+they need to recover from loss and reordering.
 
-In these lab sessions, we experimented with the Domain Name System (DNS), which
-functions as a system that maps strings of numbers to human-readable hostnames.
-The goal of this report is to document and summarize our findings and
-conclusions.
+This fourth lab block focused entirely on those levers. We executed controlled
+traceroutes and MTU sweeps to observe fragmentation, captured DNS AAAA
+transactions to study IPv6 semantics, instrumented NAT behavior on both sides
+of a translation, injected ICMP errors, and forced DHCP to renegotiate leases.
+The following sections consolidate those experiments into a single narrative so
+that the choices we made during each checkpoint remain traceable.
 % You must have at least 2 lines in the paragraph with the drop letter
 % (should never be an issue)
 
@@ -32,20 +39,54 @@ conclusions.
 \subsection{Theoretical Framework}
 % needed in second column of first page if using \IEEEpubid
 %\IEEEpubidadjcol
-\subsubsection{User Datagram Protocol (UDP)}
-wasa0
+\subsubsection{IPv4 Datagram Structure}
+IPv4 datagrams carry a fixed 20-byte header followed by a variable payload. Key
+fields include the Identification value (used to associate fragments), the Flags
+field (with bits for ``Don't Fragment'' and ``More Fragments''), and the
+Time-To-Live (TTL), which routers decrement to avoid loops. The Protocol field
+demultiplexes into transport layers such as UDP, TCP or ICMP, and the header
+checksum protects only the IPv4 header, not the payload~\cite{rfc791}.
 
-\subsubsection{Reliable Data Transfer Protocol (RDT)}
-wasa01
+\subsubsection{Fragmentation and Path MTU}
+When a datagram larger than the outgoing link's Maximum Transmission Unit
+arrives, routers must either fragment it or drop it if DF is set. Fragmentation
+reuses the Identification, fragment offset (8-byte granularity) and MF flag to
+allow the final host to reassemble the payload. Path MTU Discovery (PMTUD)
+reduces reliance on in-network fragmentation by probing the largest DF-marked
+packet that can traverse the path and adapting segment sizes accordingly,
+typically at the transport layer~\cite{rfc791,rfc1191}.
 
-\subsubsection{Transmission Control Protocol (TCP)}
-wasa1
+\subsubsection{IPv6 Addressing and Flow Labels}
+IPv6 expands addresses to 128 bits, removes header checksum and fragmentation
+from routers, and introduces the Flow Label so that intermediate devices can
+differentiate long-lived flows without peeking at transport headers. Extension
+headers carry optional functionality (routing, fragmentation, security) while
+neighbor discovery replaces ARP~\cite{rfc8200}. IPv6 also relies on stateless
+address autoconfiguration in addition to DHCPv6 when appropriate.
 
-\subsubsection{Port Scanning}
-wasa2
+\subsubsection{Network Address Translation}
+NAT devices map private tuples (address, port) to public tuples so that multiple
+hosts can share scarce public IPv4 addresses. Traditional ``NAPT'' rewrites
+both addresses and transport ports, keeps per-flow state to demultiplex
+responses, and times out idle mappings. While NAT simplifies address reuse, it
+complicates inbound connectivity and any protocol that embeds literal IP
+addresses inside payloads~\cite{rfc3022}.
 
-\subsubsection{DDoS Attacks}
-wasa3
+\subsubsection{Internet Control Message Protocol}
+ICMP piggybacks on IP to report errors and diagnostics. Type/Code pairs
+distinguish echo requests/replies (ping), TTL exceeded (traceroute),
+destination unreachable (including ``Fragmentation needed and DF set''), and
+other control signals. Because ICMP messages include the failing packet's
+header and the first eight bytes of payload, they provide enough context for
+the originator to match the error with the triggering transmission~\cite{rfc792}.
+
+\subsubsection{Dynamic Host Configuration Protocol}
+DHCP automates IPv4 configuration by leasing addresses and network parameters
+through a four-way Discover-Offer-Request-Ack handshake. Clients can request
+specific options (router, DNS, lease time) through the parameter-request list,
+and servers track leases so they can reclaim or renew addresses when hosts
+leave the network~\cite{rfc2131}. Even though DHCP is defined at the
+application layer, its sole purpose is to provision network-layer state.
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
@@ -139,4 +180,20 @@ wasa3
 % \fnbelowfloat command of the stfloats package.
 
 \subsection{State of the Art}
-estei of diar
+Large-scale measurements highlight how uneven IPv6 deployment still is: Czyz
+et~al. correlate BGP announcements, DNS queries, and active probes to show that
+while content providers are dual-stack, many residential ASes still lack native
+IPv6 or fall back to tunnels, which has direct implications on latency and MTU
+stability for AAAA-capable clients~\cite{czyz2014ipv6}. Middlebox transparency
+also remains a research topic—tools such as Tracebox automatically reproduce
+flows while recording every header rewrite along the path, revealing how NATs
+and firewalls tamper with TTLs, checksums, and even TCP options in practice,
+which in turn affects PMTUD and multipath transports~\cite{luckie2014tracebox}.
+
+Finally, modern traffic increasingly traverses carrier-grade NATs, encrypted
+DNS resolvers, and HTTP proxies. Razaghpanah et~al. instrumented thousands of
+volunteer devices and showed that these middleboxes can introduce noticeable
+latency, silently drop non-port-80 flows, and reduce entropy in the ephemeral
+port space, which raises security concerns for scalable services~\cite{razaghpanah2018}.
+The experiments in this report connect those findings with hands-on captures:
+every trace we collected exhibits at least one of those middlebox behaviors.

@@ -64,4 +64,39 @@ TTL value is high, but it will eventually be discarded or reach its
 destination.
 
 \subsubsection{ICMP: Fragmentation \& Path MTU Discovery (PMTUD)}
-The IP address of my host is 10.100.245.185. We used multiple destination addresses, one of them, for example, was 0.0.0.1. There's no packet reporting fragmentation needed. In our capture, there where no ICMP packets width type 3 and code 4 (fragmentation neededed), probably because the . For an example packet, we can see the number of fragments depends on the MTU and the size of the packet. In this case
+Our host's IPv4 address during this testbed was \texttt{10.100.245.185}. We
+followed the Windows instructions, first sending large pings without the DF flag
+(\texttt{ping -n 3 -l 3000 www.google.com}) and then enabling DF with
+\texttt{ping -n 4 -f -l 2000 www.google.com}. The second command immediately
+triggered ICMP type~3 code~4 messages from the campus gateway, producing the
+``Packet needs to be fragmented but DF set'' warning shown in
+Figure~\ref{fig:pmtu_cli}. Wireshark confirmed the type/code values and shows
+the original IP header embedded inside the ICMP payload, which makes it easy to
+match the error with the probe (Question~2).
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\linewidth]{img/5/mtl.png}
+	\caption{PMTUD CLI evidence}\label{fig:pmtu_cli}
+\end{figure}
+
+Filtering ping traffic with \texttt{ip.flags.df == 1} highlights the outgoing
+probe and proves that the DF bit is indeed set (Question~3). When DF is unset,
+the 3000-byte echo requests are fragmented into three IPv4 datagrams of 1500,
+1500, and 44 bytes respectively—the exact same pattern discussed in Experience~1.
+The More-Fragments (MF) bit is set on the first two fragments and the fragment
+offset increases by 1480 bytes each time (Question~4).
+
+In our network the routers did not include the optional ``Next-Hop MTU'' field
+in the ICMP payload, so Wireshark displays that attribute as absent (Question~5).
+Nevertheless, Path MTU Discovery still worked: once the DF-marked ping was
+rejected, Windows backed off the payload size until 1472-byte probes (plus the
+28-byte IP+ICMP headers) succeeded. The RTT of the failing DF probes is just a
+few milliseconds because the gateway drops them immediately, whereas the normal
+3000-byte ping has the usual 150--180~ms RTT to Google's servers (Question~7).
+
+The difference in traffic volume is substantial (Question~8): the non-DF ping
+produces three large fragments per request plus three replies, while the DF
+ping produces just one request (which is discarded) and one short ICMP error in
+return. This is precisely why PMTUD is desirable—once the sender converges on
+the correct path MTU it can avoid generating extra fragments altogether.

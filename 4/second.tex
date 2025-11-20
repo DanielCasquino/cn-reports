@@ -1,7 +1,30 @@
 \subsection{Second Experience}
 
 \subsubsection{IPv6}
-wasa
+To generate actual IPv6 traffic we sent an explicit AAAA query with
+\texttt{dig @2606:4700:4700::1111 AAAA youtube.com} while capturing on the
+wireless interface. The request used our temporary global address
+\texttt{2800:4b0:4031:48a4:b1ed:7cdc:87cb:6344} as source and Cloudflare's
+resolver \texttt{2606:4700:4700::1111} as destination. Wireshark reports a flow
+label of \texttt{0x9aa5e}, a payload length of 60 bytes (UDP header plus DNS
+query), Hop Limit 64, and Next Header 17, so the IPv6 datagram is delivered to
+UDP. The DNS header confirms that it is a standard recursive query with one
+question and the EDNS0 cookie option.
+
+The response datagram mirrors those fields: the Hop Limit was 57 when it
+arrived, the flow label changed to \texttt{0xbbe04} (because the resolver can
+choose its own identifier), and the payload length increased to 76 bytes to
+accommodate the AAAA answer and the OPT record. Only one IPv6 address was
+returned for \texttt{youtube.com}, namely
+\texttt{2800:3f0:4005:418::200e}, which matches the addresses resolved via
+regular DNS on the same network. Figure~\ref{fig:exp2_ipv6_flow} is the pending
+Wireshark evidence for the pair of packets.
+
+\begin{figure}[htbp]
+    \centering
+    \fbox{\parbox{0.9\linewidth}{\centering Placeholder --- IPv6 DNS AAAA request/response capture.}}
+    \caption{IPv6 AAAA exchange (pending evidence)}\label{fig:exp2_ipv6_flow}
+\end{figure}
 
 \subsubsection{Practical Exercise}
 
@@ -32,3 +55,8 @@ The destination address might be a private one, as it follows the
 
 Finally, the TTL value of 57 might indicate that the device sending the packet
 has a Linux OS.
+
+\paragraph*{Pending evidence}
+\begin{itemize}
+    \item Screenshot of the IPv6 DNS request/response (Figure~\ref{fig:exp2_ipv6_flow}).
+\end{itemize}

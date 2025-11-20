@@ -83,4 +83,33 @@ Finally, we will take a look at the ACK message.
     \caption{\texttt{DHCP ACK header}}\label{fig:ack_header}
 \end{figure}
 
-The source IPv4 a
+The source IPv4 address for the ACK is \texttt{192.168.1.1}, which is also the
+DHCP server identifier and default gateway for this LAN. The destination is the
+broadcast address \texttt{255.255.255.255} because, even though the server is
+assigning \texttt{192.168.1.101} to the client, the client has not yet fully
+configured that address and must therefore receive the ACK via broadcast. The
+assigned IP appears in the \textbf{Your (client) IP address} field (\texttt{yiaddr})
+and is also reiterated inside Option~54 (DHCP Server Identifier).
+
+Questions 13 and 14 ask about the parameter-request list: both the Discover
+frame~2 and the Request frame~5 ask for the exact same set of options (subnet
+mask, router, DNS, NetBIOS parameters, static routes, and vendor-specific
+information). This makes sense because the client still wants the same
+configuration—its Request simply confirms the lease offered in frame~4.
+
+Regarding the remaining ACK details:
+\begin{itemize}
+    \item The lease time (Option~51) is 86\,400~seconds (one day), so that is
+    how long the client can keep \texttt{192.168.1.101} before renewing.
+    \item Option~3 confirms that the first-hop router on the default path is
+    \texttt{192.168.1.1}, matching the gateway field observed in our ipconfig
+    output.
+    \item Because the message is sent from the router itself, its source MAC is
+    \texttt{00:06:25:da:af:73}, matching the Linksys access point in the lab.
+\end{itemize}
+
+With the ACK processed, the four-way DHCP handshake is complete: Discover,
+Offer, Request, and Ack all share transaction ID \texttt{0x3e5e0ce3}, which is
+how Wireshark reconstructs the conversation. This experiment also reinforced
+how DHCP relies on broadcast at first and transitions to unicast once the lease
+is confirmed.
