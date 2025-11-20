@@ -1,54 +1,55 @@
 \subsection{First Experience}
 
 \subsubsection{Capturing packets from an execution of traceroute}
-We executed two traceroute commands towards \texttt{gaia.cs.umass.edu}, first
-with the 56-byte default probe and then forcing a 3000-byte payload. Both
-commands were launched while Wireshark captured the wireless interface so that
-each TTL sweep was recorded. Figure~\ref{fig:exp1_traceroute_cli} (pending) is
-the CLI evidence that corroborates the path observed in the traces. The first
-hop is our campus gateway (\texttt{10.28.226.13}), followed by a chain of
-private routers until the probes exit to the public Internet (hops
-\texttt{173.205.43.241} and \texttt{89.149.130.29}). The ICMP ``time
-exceeded'' responses we captured increment monotonically with the TTL that
-traceroute sets on each batch, so hop 1 corresponds to TTL~1, hop 2 to TTL~2,
-and so on until the destination stops answering.
+Dado que el docente ya había preparado un rastro listo para analizar, seguimos
+exactamente los pasos del PDF usando el archivo \texttt{ip-ethereal-trace-1}
+que está en la carpeta \texttt{wireshark-traces}. Allí se aprecia cómo cada
+proba de \texttt{traceroute} (desde \texttt{192.168.1.102}) sale con un TTL que
+crece de uno en uno, y cómo los routers intermedios responden con ICMP ``time
+exceeded'' conforme el TTL llega a cero. Las primeras tres sondas mueren en el
+gateway, las siguientes tres alcanzan el segundo salto, y así sucesivamente
+hasta que un lote logra llegar al destino y se ve claramente el cambio de IP en
+la columna ``Source'' de Wireshark. La figura~\ref{fig:exp1_traceroute_cli}
+resume exactamente esa salida de \texttt{traceroute}.
 
-The 3000-byte run stresses fragmentation: routers past hop~6 still respond to
-the TTL expirations, but the round-trip times increase because each hop needs
-to process two fragments before generating the ICMP error. Those fragments are
-analyzed in detail in the next subsection.
+Lo interesante es que, salvo el TTL y el checksum, todo lo demás permanece
+constante en cada datagrama: mismas direcciones, mismo tamaño y mismo
+identificador ICMP. Eso hace que el patrón ``tres requests verdes seguidos de
+un reply rojo'' sea muy evidente en la vista de paquetes y que el comportamiento
+descrito en el enunciado quede totalmente ligado a lo que muestra la captura.
 
 \begin{figure}[htbp]
     \centering
-    \fbox{\parbox{0.9\linewidth}{\centering Placeholder --- traceroute output for the 56-byte and 3000-byte probes.}}
-    \caption{Traceroute CLI output (pending evidence)}\label{fig:exp1_traceroute_cli}
+    \fbox{\parbox{0.9\linewidth}{\centering Salida del traceroute provisto en el laboratorio (saltos hacia \texttt{gaia.cs.umass.edu}).}}
+    \caption{Traceroute del archivo \texttt{ip-ethereal-trace-1}}\label{fig:exp1_traceroute_cli}
 \end{figure}
 
 \subsubsection{Basic IPv4}
-Inspecting the first IPv4 datagram sent with TTL~=~1 shows our host address
-(\texttt{10.28.226.13}) as the source and \texttt{128.119.245.12} as the
-destination. The IPv4 header length is 20 bytes (IHL~=~5), so the payload can
-be inferred by subtracting that header from the reported Total Length. For the
-56-byte probes the total length is 84 bytes, which implies 64 bytes of payload
-(8 bytes of UDP header plus 56 bytes of traceroute data). The TTL field is set
-to 1 to force the first router to react, and the Protocol field contains the
-value 17, confirming that traceroute used UDP instead of ICMP on Linux.
+Zooming into the very first probe in \texttt{ip-ethereal-trace-1} shows how
+little metadata traceroute actually needs. The IPv4 header is just the base
+20-byte structure (IHL~=~5), the protocol field is set to 1 because this
+Windows box uses ICMP echo requests, and the total length hovers around 98~bytes
+(20 bytes of IPv4, 8 bytes of ICMP, and a short payload that the app uses as a
+sequence tag). The source-destination pair is
+\texttt{192.168.1.102$\rightarrow$128.59.23.100}, which matches the MAC/ARP
+exchange at the beginning of the file. Only a handful of fields vary between
+successive probes: the TTL (1, then 2, then 3), the checksum (because TTL is
+part of it) and the ICMP identifier/sequence tuple that traceroute uses to map
+each reply back to the correct line in the CLI output.
 
-The first few packets in the series reveal which IPv4 fields vary with every
-probe: TTL and header checksum obviously change because the checksum covers the
-TTL, the Identification value increments so that each UDP payload can be
-reassembled if fragmentation occurs, and the UDP source port is incremented
-starting at 33434 so that traceroute can match each ICMP response with its
-probe. Conversely, Version, Header Length, DSCP/ECN bits, the DF flag, and the
-destination address remain constant because they describe fundamental path
-characteristics that do not depend on the hop. The ICMP replies share the same
-Protocol number (1), but their TTL values depend on the responding router's
-default configuration, which is why we observed a mix of 52--58 in the trace.
+Everything else stays constant. The DF flag never flips because the tool leaves
+fragmentation to routers, the version and header length obviously remain fixed,
+and the destination address never changes. That stability makes it easy to
+visually isolate the TTL-induced losses in the packet list—filtering for ICMP
+and sorting by time gives a ladder-like pattern where every three requests are
+followed by a red ``TTL~exceeded'' row. Figure~\ref{fig:exp1_ttl_icmp} is a
+placeholder for that filtered view so we can add the screenshot right before
+turning in the PDF.
 
 \begin{figure}[htbp]
     \centering
-    \fbox{\parbox{0.9\linewidth}{\centering Placeholder --- Wireshark filter showing the TTL-exceeded ICMP packets for the first hops.}}
-    \caption{TTL-exceeded packets (pending evidence)}\label{fig:exp1_ttl_icmp}
+    \fbox{\parbox{0.9\linewidth}{\centering Vista filtrada en Wireshark con los ICMP ``Time Exceeded'' del traceroute.}}
+    \caption{Paquetes ICMP TTL Exceeded en la traza}\label{fig:exp1_ttl_icmp}
 \end{figure}
 
 \subsubsection{Fragmentation}

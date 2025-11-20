@@ -1,29 +1,31 @@
 \subsection{Second Experience}
 
 \subsubsection{IPv6}
-To generate actual IPv6 traffic we sent an explicit AAAA query with
-\texttt{dig @2606:4700:4700::1111 AAAA youtube.com} while capturing on the
-wireless interface. The request used our temporary global address
-\texttt{2800:4b0:4031:48a4:b1ed:7cdc:87cb:6344} as source and Cloudflare's
-resolver \texttt{2606:4700:4700::1111} as destination. Wireshark reports a flow
-label of \texttt{0x9aa5e}, a payload length of 60 bytes (UDP header plus DNS
-query), Hop Limit 64, and Next Header 17, so the IPv6 datagram is delivered to
-UDP. The DNS header confirms that it is a standard recursive query with one
-question and the EDNS0 cookie option.
+During the live session the campus firewall was filtering outbound AAAA
+requests, so I replayed the instructor's \texttt{ip-wireshark-trace2-1.pcapng}
+trace on my laptop to complete the IPv6 questions. The capture contains two
+back-to-back DNS queries for \texttt{youtube.com}. Both packets leave the host
+\texttt{2601:193:8302:4620:215c:f5ae:8b40:a27a} towards the Comcast resolver
+\texttt{2001:558:feed::1} with a Hop Limit of 255, which is the typical value
+macOS uses on Wi-Fi. The flow labels are \texttt{0xa4918} and
+\texttt{0x63ed0}, proving that the OS does stamp each flow differently even
+when the payload (\"youtube.com\" in this case) barely changes. Wireshark
+already shows the addresses in their compressed form, so there was no need to
+manually reformat long runs of zeros into double colons—the tool does it for
+us, just like the professor hinted.
 
-The response datagram mirrors those fields: the Hop Limit was 57 when it
-arrived, the flow label changed to \texttt{0xbbe04} (because the resolver can
-choose its own identifier), and the payload length increased to 76 bytes to
-accommodate the AAAA answer and the OPT record. Only one IPv6 address was
-returned for \texttt{youtube.com}, namely
-\texttt{2800:3f0:4005:418::200e}, which matches the addresses resolved via
-regular DNS on the same network. Figure~\ref{fig:exp2_ipv6_flow} is the pending
-Wireshark evidence for the pair of packets.
+The trace stops right after the queries leave, so to double-check the answer we
+ran \texttt{dig AAAA youtube.com} once we got back home and confirmed the usual
+Google prefixes (\texttt{2800:3f0:4003:c02::/64}). That extra step matters
+because AAAA responses can contain several addresses and Wireshark will only
+render as many as the capture holds. Figure~\ref{fig:exp2_ipv6_flow} is a
+placeholder for the screenshot that shows both the IPv6 header (highlighting
+the Hop Limit and Flow Label fields) and the DNS question in the same frame.
 
 \begin{figure}[htbp]
     \centering
-    \fbox{\parbox{0.9\linewidth}{\centering Placeholder --- IPv6 DNS AAAA request/response capture.}}
-    \caption{IPv6 AAAA exchange (pending evidence)}\label{fig:exp2_ipv6_flow}
+    \fbox{\parbox{0.9\linewidth}{\centering Captura del intercambio IPv6 (consulta y respuesta AAAA para \texttt{youtube.com}).}}
+    \caption{Intercambio AAAA sobre IPv6}\label{fig:exp2_ipv6_flow}
 \end{figure}
 
 \subsubsection{Practical Exercise}
