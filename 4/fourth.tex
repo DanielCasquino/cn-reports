@@ -64,23 +64,22 @@ The rest of the packet is identical to the request packet, except for the
 checksum and the additional response time field.
 
 \subsection{ICMP and Traceroute}
-Luego repetimos la captura pero esta vez con \texttt{tracert www.inria.fr} en
-mi laptop con Windows~11 (conectada a la red de UTEC). La salida completa se
-muestra en la Figura~\ref{fig:traceroute_cli}, donde se aprecia la progresión
-hop por hop: primero los routers privados de la universidad, luego los enlaces
-internacionales y finalmente la respuesta del servidor en Francia.
+We then repeated the network capture, but this time with \texttt{tracert
+    www.inria.fr} on a Windows 11 laptop, connected to UTEC's network. The output
+is shown in figure~\ref{fig:traceroute_cli}, where we can see the hop by hop
+progression: first, the university's private routers, then, the international
+links, and finally the server's response from France.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=1\linewidth]{img/4/traceroute_cli.png}
-    \caption{Resultado de \texttt{tracert www.inria.fr} en Windows}\label{fig:traceroute_cli}
+    \caption{\texttt{tracert www.inria.fr} output}\label{fig:traceroute_cli}
 \end{figure}
 
-El archivo \texttt{printout.pcapng} confirma lo que vimos en consola: Windows
-envía sondas ICMP Echo (Type~8/Code~0) con TTL 1, 2, 3, etc., y cada router en
-el camino responde con un ICMP ``Time Exceeded'' (Type~11/Code~0). Cuando la
-sonda llega al destino, el servidor responde con un ICMP Echo Reply
-(Type~0/Code~0), lo que hace que el último salto en la captura ya no aparezca
-en rojo. Esta segunda parte del laboratorio deja claro cómo \texttt{tracert}
-se apoya en exactamente los mismos campos que analizamos en la sección
-anterior, solo que ahora el TTL lo controla la herramienta y no el usuario.
+The \texttt{printout.pcapng} file confirms the console output: Windows sends
+ICMP Echo messages (Type~8/Code~0) with TTL 1, 2, 3, etc., and each router we
+reached responds with an ICMP ``Time Exceeded'' (Type~11/Code~0) packet. When
+the packet reaches its destination, the server answers with an ICMP Echo Reply
+(Type~0/Code~0) message, which is why the last hop doesn't show an error. This
+part of the report shows how \texttt{tracert} uses the same fields we analyze
+before, but the TTL is controlled by the command instead of the user.

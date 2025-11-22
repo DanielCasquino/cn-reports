@@ -2,23 +2,22 @@
 \section*{Conclusions and Recommendations}
 
 The experiments in this lab consolidated the intuition gained during the
-previous reports: traceroute gave us a concrete feel for TTL depletion and the
-mechanics of IPv4 fragmentation, the IPv6 AAAA capture proved that the stack is
-already dual-stack on campus, the NAT traces showed that only the addresses and
-checksums change as traffic crosses a boundary, ICMP error captures explained
-why type/code pairs carry so much diagnostic value, the PMTUD sweeps clarified
-how routers signal ``fragmentation needed,'' and the DHCP handshake reminded
-us that leases, options, and transaction IDs need to line up before a host
-joins the network. Altogether, the network layer stopped feeling like a set of
-abstract fields and became something we can inspect packet by packet.
-
-Going forward we plan to always keep the console output and Wireshark capture
-side by side when presenting checkpoints, capture both sides whenever we
-analyze a middlebox, record real IPv6 traffic to complement IPv4-only
-scenarios, document parameter-request lists and transaction IDs for DHCP-like
-protocols, and repeat PMTUD probes with different payload sizes until we find
-the usable MTU. These habits should make future reports more cohesive and cut
-down on last-minute evidence gathering.
+previous reports.
+\begin{itemize}
+    \item \texttt{traceroute} gave us a good understanding of TTL depletion and
+          the mechanics of IPv4 fragmentation, and highlighted the differences between ICMP
+          and UDP probes.
+    \item The IPv6 AAAA capture proved that the stack is already dual-stack on campus,
+          and showed DNS resolution for IPv6 hosts in action.
+    \item The NAT traces showed that only the addresses and checksums change as traffic
+          crosses a boundary
+    \item ICMP error captures explained why type/code pairs carry so much diagnostic
+          value, and how different errors are generated in response to different
+          situations.
+    \item The PMTUD sweeps clarified how routers signal ``fragmentation needed''
+    \item Finally, the DHCP handshake showed us that leases, options, and transaction IDs
+          need to be set up before a host joins the network.
+\end{itemize}
 % if have a single appendix:
 %\appendix[Proof of the Zonklar Equations]
 % or

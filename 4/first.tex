@@ -1,56 +1,45 @@
 \subsection{First Experience}
 
 \subsubsection{Capturing packets from an execution of traceroute}
-Dado que el docente ya había preparado un rastro listo para analizar, seguimos
-exactamente los pasos del PDF usando el archivo \texttt{ip-ethereal-trace-1}
-que está en la carpeta \texttt{wireshark-traces}. Allí se aprecia cómo cada
-proba de \texttt{traceroute} (desde \texttt{192.168.1.102}) sale con un TTL que
-crece de uno en uno, y cómo los routers intermedios responden con ICMP ``time
-exceeded'' conforme el TTL llega a cero. Las primeras tres sondas mueren en el
-gateway, las siguientes tres alcanzan el segundo salto, y así sucesivamente
-hasta que un lote logra llegar al destino y se ve claramente el cambio de IP en
-la columna ``Source'' de Wireshark. La figura~\ref{fig:exp1_traceroute_cli}
-resume exactamente esa salida de \texttt{traceroute}.
-
-Lo interesante es que, salvo el TTL y el checksum, todo lo demás permanece
-constante en cada datagrama: mismas direcciones, mismo tamaño y mismo
-identificador ICMP. Eso hace que el patrón ``tres requests verdes seguidos de
-un reply rojo'' sea muy evidente en la vista de paquetes y que el comportamiento
-descrito en el enunciado quede totalmente ligado a lo que muestra la captura.
+For this part, we followed the guide using the provided
+\texttt{ip-ethereal-trace-1}. There, it is evident how each probe from
+\texttt{traceroute} (from \texttt{192.168.86.61}) is sent with a TTL that
+increases one by one, and how the intermediate routers respond with ICMP ``time
+exceeded'' messages as the TTL reaches zero. The first three probes die at the
+gateway, the next three reach the second hop, and so on until a batch manages
+to reach its destination, which is clearly seen by the change of source IP, as
+seen in the following figure.
 
 \begin{figure}[htbp]
     \centering
-    \fbox{\parbox{0.9\linewidth}{\centering Salida del traceroute provisto en el laboratorio (saltos hacia \texttt{gaia.cs.umass.edu}).}}
-    \caption{Traceroute del archivo \texttt{ip-ethereal-trace-1}}\label{fig:exp1_traceroute_cli}
+    \includegraphics[width=1\linewidth]{img/1/ethereal.png}
+    \caption{Ethereal pcapng}\label{fig:ethereal}
 \end{figure}
+
+What is interesting is that, except for the TTL and the checksum, everything
+else remains the same in each datagram: same addresses, same size, and same
+ICMP identifier.
 
 \subsubsection{Basic IPv4}
-Zooming into the very first probe in \texttt{ip-ethereal-trace-1} shows how
+Looking at the very first probe in \texttt{ip-ethereal-trace-1} shows how
 little metadata traceroute actually needs. The IPv4 header is just the base
 20-byte structure (IHL~=~5), the protocol field is set to 1 because this
-Windows box uses ICMP echo requests, and the total length hovers around 98~bytes
-(20 bytes of IPv4, 8 bytes of ICMP, and a short payload that the app uses as a
-sequence tag). The source-destination pair is
-\texttt{192.168.1.102$\rightarrow$128.59.23.100}, which matches the MAC/ARP
-exchange at the beginning of the file. Only a handful of fields vary between
-successive probes: the TTL (1, then 2, then 3), the checksum (because TTL is
-part of it) and the ICMP identifier/sequence tuple that traceroute uses to map
-each reply back to the correct line in the CLI output.
+Windows box uses ICMP echo requests, and the total length hovers around
+98~bytes (20 bytes of IPv4, 8 bytes of ICMP, and a short payload that the app
+uses as a sequence tag). The source-destination pair is
+\texttt{192.168.86.61$\rightarrow$128.119.245.12}. Only a handful of fields
+change between successive probes: the TTL (1, then 2, then 3), the checksum
+(because TTL is part of it) and the ICMP identifier/sequence pair that
+traceroute uses to map each reply back to the correct line in the output.
 
-Everything else stays constant. The DF flag never flips because the tool leaves
-fragmentation to routers, the version and header length obviously remain fixed,
-and the destination address never changes. That stability makes it easy to
-visually isolate the TTL-induced losses in the packet list—filtering for ICMP
-and sorting by time gives a ladder-like pattern where every three requests are
-followed by a red ``TTL~exceeded'' row. Figure~\ref{fig:exp1_ttl_icmp} is a
+Everything else stays the same. The DF flag never flips because the tool leaves
+fragmentation to routers, the version and header length remain fixed too, and
+the destination address never changes. That stability makes it easy to visually
+isolate the TTL-induced losses in the packet list—filtering for ICMP and
+sorting by time gives a ladder-like pattern where every three red requests are
+followed by a green ``TTL~exceeded'' row. Figure~\ref{fig:exp1_ttl_icmp} is a
 placeholder for that filtered view so we can add the screenshot right before
 turning in the PDF.
-
-\begin{figure}[htbp]
-    \centering
-    \fbox{\parbox{0.9\linewidth}{\centering Vista filtrada en Wireshark con los ICMP ``Time Exceeded'' del traceroute.}}
-    \caption{Paquetes ICMP TTL Exceeded en la traza}\label{fig:exp1_ttl_icmp}
-\end{figure}
 
 \subsubsection{Fragmentation}
 
@@ -108,5 +97,6 @@ that the flag values are different. In this case, the flag \textbf{more
 \paragraph*{Pending evidence}
 \begin{itemize}
     \item Screenshot of the traceroute executions (Figure~\ref{fig:exp1_traceroute_cli}).
-    \item Wireshark capture filtered by \texttt{icmp} (Figure~\ref{fig:exp1_ttl_icmp}) highlighting the returned hops.
+    \item Wireshark capture filtered by \texttt{icmp} (Figure~\ref{fig:exp1_ttl_icmp})
+          highlighting the returned hops.
 \end{itemize}
