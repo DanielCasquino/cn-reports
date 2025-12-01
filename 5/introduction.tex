@@ -1,4 +1,3 @@
-\section{Introduction}
 \IEEEPARstart{E}{thernet} over twisted pair remains the default physical medium
 in campus labs and home networks because it is cheap, robust, and easy to
 terminate in the field. In this short lab we built and tested our own Cat5e
@@ -17,13 +16,13 @@ to transmit data at high speed while controlling EMI~\cite{ieee8023}. Link
 integrity depends on correct pair terminations and consistent impedance along
 the cable.
 
-\subsubsection{RJ45 Pinout and T568B}
-TIA/EIA-568-B specifies two wiring schemes (T568A and T568B) for terminating
-four twisted pairs on an 8P8C (RJ45) connector~\cite{tia568b}. Each scheme
-preserves pairing (1-2, 3-6, 4-5, 7-8) while assigning colors: in T568B the
-order from pin~1 to~8 is white/orange, orange, white/green, blue, white/blue,
-green, white/brown, brown. Using the same scheme on both ends produces a
-straight-through patch cable.
+\subsubsection{RJ45 Pinout and T568A}
+TIA/EIA-568-B specifies two wiring schemes (T568A and an alternate variant) for
+terminating four twisted pairs on an 8P8C (RJ45) connector~\cite{tia568b}. Each
+scheme preserves pairing (1-2, 3-6, 4-5, 7-8) while assigning colors: in T568A
+the order from pin~1 to~8 is white/green, green, white/orange, blue,
+white/blue, orange, white/brown, brown. Using the same scheme on both ends
+produces a straight-through patch cable.
 
 \subsubsection{Crimping and Continuity}
 Crimping drives the connector's metal blades through the insulation to make
@@ -37,8 +36,8 @@ crossed pairs exist~\cite{fluketest}.
 Field studies show that poor terminations and pair misorders are a leading
 cause of Ethernet link flaps and reduced throughput, especially when upgrading
 legacy cabling to gigabit speeds~\cite{biegel2006}. Industry best practices
-recommend sticking to a single standard (typically T568B), maintaining twist
-all the way to the plug, and validating with calibrated testers to avoid hidden
+recommend sticking to a single standard (here, T568A), maintaining twist all
+the way to the plug, and validating with calibrated testers to avoid hidden
 faults that only surface under load~\cite{fluketest}. Recent work on higher
 speeds over copper (2.5G/5GBASE-T) further tightens requirements on return loss
 and crosstalk, making correct pinouts and clean crimps even more critical
