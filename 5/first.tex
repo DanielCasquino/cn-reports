@@ -1,0 +1,78 @@
+\subsection{Ethernet Cabling Experience}
+
+\subsubsection{Preparing the Cable}
+We began by cutting a 1~meter Cat5e segment and stripping about 4~cm of the
+outer jacket on each end. After exposing the four twisted pairs, we straightened
+them to make alignment easier (Figure~\ref{fig:pelando}). The color pairs
+appeared as expected: white/orange--orange, white/green--green,
+white/blue--blue, and white/brown--brown.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{img/1/pelando.jpeg}
+    \caption{Desnudando la chaqueta y separando pares}\label{fig:pelando}
+\end{figure}
+
+\subsubsection{Ordering and Trimming}
+Following the lab rule (grupo impar), we used the T568B scheme on both ends.
+We aligned the conductors from pin~1 to pin~8 as white/orange, orange,
+white/green, blue, white/blue, green, white/brown, brown
+(Figure~\ref{fig:internos}), verified that the twists stayed close to the plug,
+and trimmed the eight wires to a uniform length (Figures~\ref{fig:midiendo1}
+and~\ref{fig:midiendo2}). Keeping the jacket inside the connector mouth helps
+with strain relief once crimped.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{img/1/internos.jpeg}
+    \caption{Pares alineados según T568B}\label{fig:internos}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{img/1/midiendo1.jpeg}
+    \caption{Nivelando longitudes antes del corte}\label{fig:midiendo1}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{img/1/midiendo2.jpeg}
+    \caption{Conectores listos para crimpado}\label{fig:midiendo2}
+\end{figure}
+
+\subsubsection{Crimping}
+With the wires ordered and trimmed, we inserted them into the RJ45 plug (clip
+facing down) and ensured each conductor reached the front of the connector.
+Then we crimped firmly so the metal blades pierced the insulation and the plug
+latched onto the jacket (Figure~\ref{fig:cabezal}). We repeated the process on
+the other end, again keeping the T568B order to form a straight-through patch.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{img/1/cabezal.jpeg}
+    \caption{Conector RJ45 crimpado con T568B}\label{fig:cabezal}
+\end{figure}
+
+\subsubsection{Testing}
+Finally, we connected both ends to the cable tester. All eight LEDs advanced in
+sequence on both units, indicating correct pin-to-pin continuity and no crossed
+pairs (Figure~\ref{fig:test}). We also recorded short and long tester videos to
+capture the live blinking pattern (files \texttt{img/1/test-corto.mp4} y
+\texttt{img/1/test-largo.mp4}).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{img/1/test.jpeg}
+    \caption{Prueba de continuidad con el tester}\label{fig:test}
+\end{figure}
+
+\subsubsection{Result}
+The finished cable is shown in Figure~\ref{fig:terminado}. With the tester
+passing and strain relief in place, the patch is ready for everyday Ethernet
+use at 100/1000~Mbps.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{img/1/terminado.jpeg}
+    \caption{Cable terminado, listo para usar}\label{fig:terminado}
+\end{figure}

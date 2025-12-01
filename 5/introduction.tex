@@ -1,0 +1,45 @@
+\section{Introduction}
+\IEEEPARstart{E}{thernet} over twisted pair remains the default physical medium
+in campus labs and home networks because it is cheap, robust, and easy to
+terminate in the field. In this short lab we built and tested our own Cat5e
+patch cable with RJ45 connectors to understand the practical details that
+underpin the link layer: pair ordering, crimping, and continuity testing. The
+goal of this report is to document the assembly process, highlight common
+pitfalls, and relate the observed results to the standards that govern copper
+cabling.
+
+\subsection{Theoretical Framework}
+\subsubsection{Ethernet over Twisted Pair}
+IEEE~802.3 defines Ethernet physical layers that run over balanced twisted
+pairs (Cat5e/Cat6). Each pair is tightly twisted to reduce crosstalk, and
+100BASE-TX/1000BASE-T use differential signaling and MLT-3 or PAM-5 line codes
+to transmit data at high speed while controlling EMI~\cite{ieee8023}. Link
+integrity depends on correct pair terminations and consistent impedance along
+the cable.
+
+\subsubsection{RJ45 Pinout and T568B}
+TIA/EIA-568-B specifies two wiring schemes (T568A and T568B) for terminating
+four twisted pairs on an 8P8C (RJ45) connector~\cite{tia568b}. Each scheme
+preserves pairing (1-2, 3-6, 4-5, 7-8) while assigning colors: in T568B the
+order from pin~1 to~8 is white/orange, orange, white/green, blue, white/blue,
+green, white/brown, brown. Using the same scheme on both ends produces a
+straight-through patch cable.
+
+\subsubsection{Crimping and Continuity}
+Crimping drives the connector's metal blades through the insulation to make
+solid contact with each conductor. Proper termination requires even wire
+lengths, the jacket inside the plug for strain relief, and fully seated pins.
+Continuity testers sequence voltage across each pin to verify that 1$\rightarrow$1,
+2$\rightarrow$2, \dots, 8$\rightarrow$8 are intact and that no shorts or
+crossed pairs exist~\cite{fluketest}.
+
+\subsection{State of the Art}
+Field studies show that poor terminations and pair misorders are a leading
+cause of Ethernet link flaps and reduced throughput, especially when upgrading
+legacy cabling to gigabit speeds~\cite{biegel2006}. Industry best practices
+recommend sticking to a single standard (typically T568B), maintaining twist
+all the way to the plug, and validating with calibrated testers to avoid hidden
+faults that only surface under load~\cite{fluketest}. Recent work on higher
+speeds over copper (2.5G/5GBASE-T) further tightens requirements on return loss
+and crosstalk, making correct pinouts and clean crimps even more critical
+~\cite{ieee8023bz}.
